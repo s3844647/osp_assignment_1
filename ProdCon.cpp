@@ -1,9 +1,21 @@
-#include <iostream>
+#include "ProdCon.h"
 
-//Producer-consumer application for Assignment 1.
+//REMEMBER TO CLEAN THIS UP
 
-int buckets [10];
+ProdCon::ProdCon() { //blank constructor
 
-void runMethod() {
-    std::cout << "Not started yet" << std::endl;
+}
+
+void ProdCon::runMethod() {
+    pthread_t th1;
+    int check;
+
+    std::cout << "Creating thread" << std::endl;
+    check = pthread_create(&th1, NULL, &produceItem, (void *) 1);
+
+}
+
+void* ProdCon::produceItem(void* threadID) {
+
+    return NULL;
 }
