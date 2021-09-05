@@ -1,18 +1,24 @@
 #include "ProdCon.h"
 
-//Based on example code given in tutorials. REMEMBER TO ADD OUTPUT
-
-pthread_cond_t condition;
-bool prodDone = false;
+/* Based on example code given in tutorials.
+SOURCES:
+https://shivammitra.com/c/producer-consumer-problem-in-c/#
+Shivam Mitra - Accessed 3 September 2021.
+https://gist.github.com/alexklibisz/7cffdfe90c97986f8393
+Alex Klibisz - Accessed 3 September 2021. */
 
 int in = 0;
 int out = 0;
 int buckets[10];
-pthread_mutex_t lock;
 
-ProdCon::ProdCon()
-{ //blank constructor
-}
+pthread_cond_t pvar; //condition variables
+pthread_cond_t cvar;
+pthread_mutex_t lock; //mutex
+
+int prodDone = 1; //condition handling
+int conDone = 1;
+
+ProdCon::ProdCon() {} //blank constructor
 
 ProdCon::~ProdCon()
 { //destructor
@@ -22,13 +28,16 @@ ProdCon::~ProdCon()
     }
 }
 
-void ProdCon::runMethod()
+int ProdCon::main(void)
 {
     pthread_t prod[5]; //Arrays of threads
     pthread_t con[5];
 
+    std::cout << "Running producer-consumer problem" << std::endl;
+    std::cout << "Initialising mutex" << std::endl;
     pthread_mutex_init(&lock, NULL);
 
+    std::cout << "Creating threads..." << std::endl;
     for (int i = 0; i < 5; i++)
     {
         pthread_create(&prod[i], NULL, produceItem, (void *)i);
@@ -37,8 +46,6 @@ void ProdCon::runMethod()
     {
         pthread_create(&con[j], NULL, consumeItem, (void *)j);
     }
-
-    sleep(10);
 
     for (int i = 0; i < 5; i++)
     {
@@ -49,6 +56,11 @@ void ProdCon::runMethod()
         pthread_join(con[j], NULL);
     }
 
+    //graceful exit
+    std::cout << "Threads finished, now sleeping" << std::endl;
+    sleep(10);
+    std::cout << "Exiting" << std::endl;
+
     pthread_mutex_destroy(&lock);
 }
 
@@ -56,22 +68,25 @@ void *ProdCon::produceItem(void *threadID)
 { //Producer method.
     for (int i = 0; i < 10; i++)
     {
-        int item = rand() % 10 + 1; //Generate a random number between 1 and 10.
+        int item = rand() % 100 + 1; //Generate a random number between 1 and 100.
 
         pthread_mutex_lock(&lock);
-        if (!prodDone)
+        std::cout << "Mutex locked" << std::endl;
+        if (prodDone == 1)
         {
-            prodDone = true;
-            pthread_cond_wait(&condition, &lock);
-            buckets[in] = item; //Put numbers in the array.
-            in = (in + 1) % 10; //Increment.
+            prodDone = 2;
+            pthread_cond_wait(&pvar, &lock); //release lock and enable thread to sleep
         }
-        else
+        else //activates after value changed
         {
-
-            pthread_cond_signal(&condition);
+            buckets[in] = item; //Put numbers in the array.
+            std::cout << "Thread: " << threadID << std::endl;
+            std::cout << "Item " << buckets[in] << " inserted at " << in << std::endl;
+            in = (in + 1) % 10;         //Increment.
+            pthread_cond_signal(&pvar); //wake up thread
         }
         pthread_mutex_unlock(&lock);
+        std::cout << "Mutex unlocked" << std::endl;
     }
     return NULL;
 }
@@ -81,8 +96,22 @@ void *ProdCon::consumeItem(void *threadID)
     for (int i = 0; i < 10; i++)
     {
         pthread_mutex_lock(&lock);
-        int item = buckets[i];
+        std::cout << "Mutex locked" << std::endl;
+        if (conDone == 1)
+        {
+            conDone = 2;
+            pthread_cond_wait(&cvar, &lock);
+        }
+        else
+        {
+            int item = buckets[out];
+            std::cout << "Thread: " << threadID << std::endl;
+            std::cout << "Item " << item << " removed from " << out << std::endl;
+            out = (out + 1) % 10; //Increment.
+            pthread_cond_signal(&cvar);
+        }
         pthread_mutex_unlock(&lock);
+        std::cout << "Mutex unlocked" << std::endl;
     }
 
     return NULL;
