@@ -8,12 +8,13 @@ int availableSeats = 4; //by default
 pthread_mutex_t lockB;
 double runningTime; //ensure the program stops creating customers after 10 seconds. (???)
 
-Barbers::Barbers() {} //blank constructor
-
-Barbers::~Barbers() {} //blank destructor
+Barbers::Barbers()
+{
+}
 
 void Barbers::runMethod()
 {
+
     pthread_t barber;       //Barber thread
     pthread_t makeCustomer; //Thread for making customers
 
@@ -23,6 +24,7 @@ void Barbers::runMethod()
     pthread_create(&makeCustomer, NULL, makeCustomerMethod, (void *)1);
 
     pthread_join(barber, NULL);
+
     pthread_join(makeCustomer, NULL);
 }
 
@@ -45,6 +47,7 @@ void *Barbers::makeCustomerMethod(void *threadID) //Method for making customers.
 {
     while (runningTime < 10)
     {
+
         pthread_t customer; //declare thread
 
         pthread_create(&customer, NULL, customerMethod, NULL);

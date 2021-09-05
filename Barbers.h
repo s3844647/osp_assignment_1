@@ -3,12 +3,11 @@
 #include <pthread.h>
 #include <unistd.h>
 
-class Barbers
-{ //See ProdCon note.
+class Barbers //Didn't seem to work otherwise.
+{
 public:
     Barbers();
-    ~Barbers();
-    static void runMethod();
+    void runMethod();
 
 private:
     static void *barberMethod(void *threadID);
