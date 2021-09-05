@@ -1,11 +1,18 @@
-#include "ProdCon.h"
+#include <iostream>
+#include <pthread.h>
+#include <unistd.h>
 
 /* Based on example code given in tutorials.
 SOURCES:
 https://shivammitra.com/c/producer-consumer-problem-in-c/#
 Shivam Mitra - Accessed 3 September 2021.
 https://gist.github.com/alexklibisz/7cffdfe90c97986f8393
-Alex Klibisz - Accessed 3 September 2021. */
+Alex Klibisz - Accessed 3 September 2021. 
+
+NO HEADER - THIS IS A STANDALONE CLASS. */
+
+static void *produceItem(void *threadID);
+static void *consumeItem(void *threadID);
 
 int in = 0;
 int out = 0;
@@ -18,17 +25,7 @@ pthread_mutex_t lock; //mutex
 int prodDone = 1; //condition handling
 int conDone = 1;
 
-ProdCon::ProdCon() {} //blank constructor
-
-ProdCon::~ProdCon()
-{ //destructor
-    for (int i = 0; i < 10; i++)
-    {
-        buckets[i] = 0;
-    }
-}
-
-int ProdCon::main(void)
+int main(void)
 {
     pthread_t prod[5]; //Arrays of threads
     pthread_t con[5];
@@ -62,9 +59,11 @@ int ProdCon::main(void)
     std::cout << "Exiting" << std::endl;
 
     pthread_mutex_destroy(&lock);
+
+    return 0;
 }
 
-void *ProdCon::produceItem(void *threadID)
+void* produceItem(void *threadID)
 { //Producer method.
     for (int i = 0; i < 10; i++)
     {
@@ -91,7 +90,7 @@ void *ProdCon::produceItem(void *threadID)
     return NULL;
 }
 
-void *ProdCon::consumeItem(void *threadID)
+void *consumeItem(void *threadID)
 { //Consumer method.
     for (int i = 0; i < 10; i++)
     {
