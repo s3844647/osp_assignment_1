@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 class Barbers //Didn't seem to work otherwise.
 {

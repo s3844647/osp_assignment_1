@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-class ProdCon //Didn't work otherwise.
+class ProdCon //Didn't seem to work otherwise.
 {
 
 public:

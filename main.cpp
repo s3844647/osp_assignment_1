@@ -6,13 +6,12 @@
 
 int main(void)
 {
-//#ifdef PRODCON
+#ifdef PRODCON
     ProdCon *pc = new ProdCon();
     pc->runMethod();
-//#elif defined(BARBERS)
+#elif defined(BARBERS)
     Barbers *ba = new Barbers();
     ba->runMethod();
-
-//#endif
+#endif
     return 0;
 }

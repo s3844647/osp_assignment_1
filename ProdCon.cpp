@@ -5,8 +5,9 @@ SOURCES:
 https://shivammitra.com/c/producer-consumer-problem-in-c/#
 Shivam Mitra - Accessed 3 September 2021.
 https://gist.github.com/alexklibisz/7cffdfe90c97986f8393
-Alex Klibisz - Accessed 3 September 2021. 
-*/
+Alex Klibisz - Accessed 3 September 2021. */
+
+//NO SEMAPHORES USED
 
 int in = 0;
 int out = 0;
@@ -70,7 +71,7 @@ void *ProdCon::produceItem(void *threadID)
         if (prodDone == 1)
         {
             prodDone = 2;
-            pthread_cond_wait(&pvar, &lock); //release lock and enable thread to sleep
+            pthread_cond_wait(&pvar, &lock); //enable thread to sleep
         }
         else //activates after value changed
         {
