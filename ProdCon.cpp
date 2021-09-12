@@ -43,6 +43,7 @@ void ProdCon::runMethod()
         pthread_create(&con[j], NULL, consumeItem, (void *)j);
     }
 
+    //wait for threads to finish
     for (int i = 0; i < 5; i++)
     {
         pthread_join(prod[i], NULL);
@@ -93,14 +94,14 @@ void *ProdCon::consumeItem(void *threadID)
     {
         pthread_mutex_lock(&lock);
         std::cout << "Mutex locked" << std::endl;
-        if (conDone == 1)
+        if (conDone == 1) //condition handling
         {
             conDone = 2;
             pthread_cond_wait(&cvar, &lock);
         }
         else
         {
-            int item = buckets[out];
+            int item = buckets[out]; //'remove' item
             std::cout << "Thread: " << threadID << std::endl;
             std::cout << "Item " << item << " removed from " << out << std::endl;
             out = (out + 1) % 10; //Increment.
